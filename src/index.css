@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 230 30% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 230 30% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 30% 14%;
+    --primary: 220 100% 16%;
+    --primary-foreground: 210 40% 98%;
+    --primary-dark: 220 100% 13%;
+    --primary-light: 220 70% 36%;
+    --secondary: 228 30% 96%;
+    --secondary-foreground: 220 100% 16%;
+    --accent: 358 70% 47%;
+    --accent-foreground: 0 0% 100%;
+    --accent-dark: 358 70% 38%;
+    --accent-light: 0 60% 62%;
+    --muted: 225 20% 94%;
+    --muted-foreground: 231 18% 49%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 20% 91%;
+    --input: 220 20% 91%;
+    --ring: 220 100% 16%;
+    --radius: 14px;
+    --gold: 43 75% 48%;
+    --green: 145 65% 29%;
+    --text-dark: 233 25% 14%;
+    --text-body: 231 22% 30%;
+    --text-muted: 232 16% 49%;
+    --off-white: 225 33% 97%;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Nunito', 'Segoe UI', sans-serif;
+    --sidebar-background: 220 100% 13%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 43 75% 48%;
+    --sidebar-primary-foreground: 220 100% 13%;
+    --sidebar-accent: 220 50% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 30% 25%;
+    --sidebar-ring: 220 80% 55%;
+  }
+
+  .dark {
+    --background: 220 100% 5%;
+    --foreground: 210 40% 98%;
+    --card: 220 100% 8%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 220 100% 16%;
+    --secondary: 220 30% 15%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 220 30% 15%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 358 70% 47%;
+    --accent-foreground: 0 0% 100%;
+    --border: 220 30% 17%;
+    --input: 220 30% 17%;
+    --ring: 220 80% 55%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
+  }
+  .bg-gradient-hero {
+    background: linear-gradient(120deg, hsla(220, 100%, 20%, 0.88) 40%, hsla(358, 70%, 47%, 0.6) 100%);
+  }
+  .bg-gradient-cta {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 50%, hsl(var(--accent)) 100%);
+  }
+  .shadow-hope-sm { box-shadow: 0 2px 12px rgba(0,40,104,0.08); }
+  .shadow-hope-md { box-shadow: 0 8px 32px rgba(0,40,104,0.13); }
+  .shadow-hope-lg { box-shadow: 0 20px 60px rgba(0,40,104,0.18); }
+  .animate-fade-up {
+    animation: fadeInUp 0.9s ease forwards;
+  }
+  .animate-marquee {
+    animation: marqueeAnim 40s linear infinite;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marqueeAnim {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(-100%); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: 4px; }
