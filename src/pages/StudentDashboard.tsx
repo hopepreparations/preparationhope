@@ -43,6 +43,62 @@ const StudentDashboard = () => {
     return items.filter(i => (i.title || '').toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q));
   };
 
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (url: string, filename: string, itemId: string) => {
+    if (!url) return;
+
+    // Google Drive links — can't force download cross-origin, open in tab
+    if (url.includes('drive.google.com') || url.includes('docs.google.com')) {
+      window.open(url, '_blank', 'noopener');
+      return;
+    }
+
+    setDownloadingId(itemId);
+    try {
+      // Fetch the file as a blob — this is the only reliable way to force
+      // download for cross-origin URLs like Supabase storage
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        if (response.status === 404 || response.status === 403) {
+          alert('❌ This file is no longer available.\nIt may have been deleted by the admin. Please contact your teacher.');
+        } else {
+          alert(`❌ Could not download the file (Error ${response.status}).\nPlease try again later.`);
+        }
+        return;
+      }
+
+      const blob = await response.blob();
+      // Determine a good filename with extension
+      const contentType = response.headers.get('content-type') || '';
+      let ext = '';
+      if (!filename.includes('.')) {
+        if (contentType.includes('pdf')) ext = '.pdf';
+        else if (contentType.includes('jpeg') || contentType.includes('jpg')) ext = '.jpg';
+        else if (contentType.includes('png')) ext = '.png';
+        else if (contentType.includes('word')) ext = '.docx';
+      }
+      const finalName = (filename || 'download') + ext;
+
+      // Create object URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = finalName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // Clean up blob URL after short delay
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+
+    } catch (err) {
+      alert('❌ Download failed. The file may have been deleted or your internet connection dropped.\nPlease contact your admin if this keeps happening.');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
 
   const tabs = [
@@ -174,7 +230,9 @@ const StudentDashboard = () => {
                   {url && (
                     <div className="flex gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                       <a href={url} target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-all"><i className="fas fa-eye mr-1"></i>Open</a>
-                      <a href={url} download target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all"><i className="fas fa-download mr-1"></i>Download</a>
+                      <button onClick={() => handleDownload(url, n.title, n.id)} disabled={downloadingId === n.id} className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all disabled:opacity-60 disabled:cursor-wait min-w-[100px] text-center">
+                        {downloadingId === n.id ? <><i className="fas fa-spinner fa-spin mr-1"></i>Saving...</> : <><i className="fas fa-download mr-1"></i>Download</>}
+                      </button>
                     </div>
                   )}
                 </div>
@@ -199,7 +257,9 @@ const StudentDashboard = () => {
                   {url && (
                     <div className="flex gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                       <a href={url} target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-all"><i className="fas fa-eye mr-1"></i>Open</a>
-                      <a href={url} download target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all"><i className="fas fa-download mr-1"></i>Download</a>
+                      <button onClick={() => handleDownload(url, n.title, n.id)} disabled={downloadingId === n.id} className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all disabled:opacity-60 disabled:cursor-wait min-w-[100px] text-center">
+                        {downloadingId === n.id ? <><i className="fas fa-spinner fa-spin mr-1"></i>Saving...</> : <><i className="fas fa-download mr-1"></i>Download</>}
+                      </button>
                     </div>
                   )}
                 </div>
@@ -224,7 +284,9 @@ const StudentDashboard = () => {
                   {url && (
                     <div className="flex gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                       <a href={url} target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-all"><i className="fas fa-eye mr-1"></i>Open</a>
-                      <a href={url} download target="_blank" rel="noopener" className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all"><i className="fas fa-download mr-1"></i>Download</a>
+                      <button onClick={() => handleDownload(url, t.title, t.id)} disabled={downloadingId === t.id} className="px-3 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:bg-primary-dark transition-all disabled:opacity-60 disabled:cursor-wait min-w-[100px] text-center">
+                        {downloadingId === t.id ? <><i className="fas fa-spinner fa-spin mr-1"></i>Saving...</> : <><i className="fas fa-download mr-1"></i>Download</>}
+                      </button>
                     </div>
                   )}
                 </div>
@@ -255,3 +317,4 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
